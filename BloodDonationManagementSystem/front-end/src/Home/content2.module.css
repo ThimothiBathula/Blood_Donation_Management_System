@@ -1,0 +1,20 @@
+.container{
+    display: flex;
+    margin: 10px;
+}
+.container .left img{
+    height: 500px;
+}
+.container .right{
+    margin: auto;
+
+}
+.container .right h1{
+    padding-left: 100px;
+    color:#a61f67;
+    font-weight: 800;
+}
+.container .right p{
+    padding-left: 100px;
+    width:450px;
+}

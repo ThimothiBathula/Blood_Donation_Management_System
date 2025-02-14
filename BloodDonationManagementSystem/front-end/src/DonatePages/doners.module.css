@@ -1,0 +1,112 @@
+.deatils{
+    width: 40%;
+    display: flex;
+    height: 200px;
+    border-radius: 20px;
+    background-color: #f7f7f7;
+    justify-content: flex-start;
+    align-items: center;
+    margin: auto;
+    margin-top: 20px;
+    padding: 10px;
+    box-shadow: 1px 1px 10px black;
+}
+.details{
+    width:100%;
+    height:300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+}
+.details p{
+    margin: 5px;
+    width:200px;
+    height: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.Img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #e0e0e0; /* Light grey for skeleton image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.img{
+    width:100px;
+    height: 100px;
+    border-radius: 50%;
+}
+.contactButton button{
+    width:100%;
+    height: 30px;
+    margin-top: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+.detailsSkeleton {
+    width: 40%;
+    display: flex;
+    height: 250px;
+    border-radius: 20px;
+    background-color: #f7f7f7; /* Light grey for the skeleton background */
+    justify-content: flex-start; /* Align items to the start */
+    align-items: center; /* Center vertically */
+    margin: auto;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.ImgSkeleton {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #e0e0e0; /* Light grey for skeleton image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Skeleton Texts (representing Name, Age, Group, Phone) */
+.skeletonText {
+    width: 100%;
+    height: 16px;
+    background-color: #e0e0e0;
+    margin: 8px 0;
+    border-radius: 4px;
+}
+
+.detailsSkeleton .detailsContent {
+    flex: 1;
+    margin-left: 15px;
+}
+
+/* Skeleton Buttons (Contact & View) */
+.skeletonButton {
+    width: 80px;
+    height: 30px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+}
+
+/* Shimmer Animation for Skeleton Elements */
+@keyframes shimmer {
+    0% {
+        background-position: -100%;
+    }
+    100% {
+        background-position: 100%;
+    }
+}
+
+.skeletonText, .skeletonButton {
+    background: linear-gradient(90deg, #f7f7f7 25%, #e0e0e0 50%, #f7f7f7 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}

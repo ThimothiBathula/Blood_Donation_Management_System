@@ -1,0 +1,93 @@
+.Form{
+    width:100%;
+    height:fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}  
+.content{
+    display: flex;
+    flex-direction: column;
+    background-color:rgba(0, 0, 255,0.3);
+    width:300px;
+    height: 330px;
+    border-radius: 10px;
+    margin-top: 30px;
+    align-items: center;
+    box-shadow: 1px 1px 10px rgb(123, 255, 0);
+    margin-bottom: 100px;
+    outline-width: 1px;
+    outline-offset: 0;
+    outline-color: rgba(123, 255, 0,0.75);
+    outline-style: solid;
+    animation: animateOutline 4s ease infinite;
+}
+@keyframes animateOutline {
+    0% {
+      outline-width: 1px;
+      outline-offset: 0;
+      outline-color: rgba(123, 255, 206, 0);
+    }
+  
+    10% {
+      outline-color: rgba(123, 255, 0, 0.75);
+    }
+    50% {
+      outline-width: 7px;
+      outline-offset: 4px;
+      outline-color: rgba(123, 255, 206, 0);
+    }
+  
+    100% {
+      outline-width: 7px;
+      outline-offset: 4px;
+      outline-color: rgba(123, 102, 102, 0);
+    }
+  }
+
+.content input{
+    margin-top: 20px;
+    width: 200px;
+    height:30px;
+    border: none;
+    border-radius: 10px;
+    padding-left: 10px;
+    outline: none;
+}
+.content .button{
+    width:150px;
+    height: 35px;
+    margin-top: 40px;
+    font-size: large;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid black;
+    z-index: 1;
+}
+.button::before{
+    content: "";
+    width:10px;
+    height: 10px;
+    background-color: red;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+}
+.content .button:hover{
+    border: none;
+    animation: bg 1s ease-in forwards;
+}
+@keyframes bg{
+    0%{
+        background:rgba(255, 0, 0,0.2);
+    }
+    /* 50%{
+        background:rgba(255, 0, 0,0.5);
+    } */
+    100%{
+        background:rgba(255, 0, 0,1);
+    }
+}

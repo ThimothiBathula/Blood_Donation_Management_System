@@ -1,0 +1,65 @@
+.container{
+    width:500px;
+    height:500px;
+    background-color: aqua;
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 10px;
+}
+.container h1::first-letter{
+    text-decoration: underline;
+    text-decoration-color: red;
+
+}
+.container .first,.second,.email,.msg,.btn{
+    width:90%;
+    height:60px;
+    margin: auto;
+}
+.first input{
+    width:100%;
+    height:40px;
+    outline: none;
+    border-radius: 10px;
+    border:none;
+    padding-left: 10px;
+}
+.second input{
+    width:100%;
+    height:40px;
+    outline: none;
+    border-radius: 10px;
+    border:none;
+    padding-left: 10px;
+}
+.email input{
+    width:100%;
+    height:40px;
+    outline: none;
+    border-radius: 10px;
+    border:none;
+    padding-left: 10px;
+}
+.msg textarea{
+    width:100%;
+    height:100px;
+    outline: none;
+    border-radius: 10px;
+    border:none;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+.btn{
+    margin-top: 90px;
+}
+.btn button{
+    width:100%;
+    height: 50px;
+    margin: auto;
+    color:aliceblue;
+    font-weight: 600;
+    cursor: pointer;
+}
