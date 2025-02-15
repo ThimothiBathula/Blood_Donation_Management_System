@@ -1,7 +1,6 @@
 .container{
-    width:500px;
-    height:500px;
-    background-color: aqua;
+    width:400px;
+    height:450px;
     border-radius: 20px;
     text-align: center;
     margin-top: 20px;
@@ -12,7 +11,9 @@
 .container h1::first-letter{
     text-decoration: underline;
     text-decoration-color: red;
-
+}
+.ContactHead{
+    color:wheat;
 }
 .container .first,.second,.email,.msg,.btn{
     width:90%;
@@ -20,7 +21,7 @@
     margin: auto;
 }
 .first input{
-    width:100%;
+    width:90%;
     height:40px;
     outline: none;
     border-radius: 10px;
@@ -28,7 +29,7 @@
     padding-left: 10px;
 }
 .second input{
-    width:100%;
+    width:90%;
     height:40px;
     outline: none;
     border-radius: 10px;
@@ -36,7 +37,7 @@
     padding-left: 10px;
 }
 .email input{
-    width:100%;
+    width:90%;
     height:40px;
     outline: none;
     border-radius: 10px;
@@ -44,7 +45,7 @@
     padding-left: 10px;
 }
 .msg textarea{
-    width:100%;
+    width:90%;
     height:100px;
     outline: none;
     border-radius: 10px;
@@ -56,10 +57,88 @@
     margin-top: 90px;
 }
 .btn button{
-    width:100%;
+    width:80%;
     height: 50px;
     margin: auto;
-    color:aliceblue;
     font-weight: 600;
     cursor: pointer;
+    border-radius: 20px;
+    border: 1px solid white;
+    background-color: transparent;
+    color:white;
+
 }
+button:hover{
+    background-color: red;
+    border: none;
+}
+
+
+
+.container {
+    display: grid;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(
+        from var(--border-angle),
+        #213,
+        #112 5%,
+        #112 60%,
+        #213 95%
+      );
+    
+    border: solid 5px transparent;
+    border-radius: 2em;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+    
+    background: 
+      var(--main-bg) padding-box,
+      var(--gradient-border) border-box, 
+      var(--main-bg) border-box;
+    
+    background-position: center center;
+  
+    animation: bg-spin 3s linear infinite;
+
+  }
+  
+  @keyframes bg-spin {
+    to {
+      --border-angle: 1turn;
+    }
+  }
+  .container:hover {
+    animation-play-state: paused;
+  }
+  @property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+  }
+
+  .pop{
+    width:400px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgb(103, 252, 103);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .popLeft{
+    /* width:20px; */
+    font-size: small;
+    color: white;
+  }
+  .popRight{
+    width:20px;
+    /* float: right; */
+    cursor: pointer;
+    color: white;
+    padding-right: 5px;
+  }
+  

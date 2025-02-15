@@ -237,13 +237,22 @@ app.get("/api/doners",async (req,res)=>{
   }
 })
 
-app.post('/api/contact',(req,res)=>{
-  const{UserName,Name,Email,Message}=req.body
-  const user=User.findOne({UserName})
-  const doner=new Contact({UserName,Name,Email,Message})
-  doner.save()
+app.post('/api/contact',async(req,res)=>{
+  const{Name,Email,Message}=req.body
+  const c= new Contact({Name,Email,Message})
+  await c.save()
   res.status(200).send({message:"Success"})
 
+})
+
+app.get('/api/contacts',async(req,res)=>{
+  try{
+    const contacts= await Contact.find()
+    res.status(200).send(contacts)
+  }
+  catch(err){
+    console.log(err)
+  }
 })
 
 

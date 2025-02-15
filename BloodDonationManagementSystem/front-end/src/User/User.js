@@ -19,6 +19,7 @@ const User=()=>{
         Setopen(false)
     }
     const submissions= async()=>{
+        try{
         const token=localStorage.getItem('user')
         let response= await axios.get('http://localhost:4000/api/submits',{
             headers: {
@@ -28,10 +29,15 @@ const User=()=>{
             
             
         )
+        console.log(response.status)
         setLoading(false);
         console.log(response.data)
         setData(response.data)
         // console.log(data)
+    }
+    catch(err){
+        console.log(err)
+    }
 
     }
 
