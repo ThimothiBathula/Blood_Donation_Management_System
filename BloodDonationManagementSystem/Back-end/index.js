@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session')
 const jwt=require('jsonwebtoken')
 const secretKey="THIMOTHI"
+const AdminSecretKey="Admin"
 const multer=require('multer')
 const path = require('path');
 
@@ -216,7 +217,7 @@ app.get('/api/submits', async (req, res) => {
     const data = await Doner.find({ User_id });
 
     if (data.length === 0) {
-      return res.status(404).send({ message: 'No data found for this user' });
+      return res.status(200).send({ message: 'No data found for this user' });
     }
 
     return res.status(200).send(data);
@@ -225,7 +226,6 @@ app.get('/api/submits', async (req, res) => {
     return res.status(500).send({ message: 'Server error', error: err.message });
   }
 });
-
 
 
 app.get("/api/doners",async (req,res)=>{
@@ -292,7 +292,7 @@ app.post('/adminLog', async(req,res)=>{
     if(Password!==AdminUser.Password){
       return res.status(401).json({message:'Invalid UseNAme or Password'})
     }
-    let token=jwt.sign({UserName},secretKey,{expiresIn:'1h'})
+    let token=jwt.sign({UserName},AdminSecretKey,{expiresIn:'1h'})
       res.status(200).json({ message: 'Authentication successful',token:token });
   }
   catch(err){
@@ -302,6 +302,8 @@ app.post('/adminLog', async(req,res)=>{
 
 })
 
+
+/*View Doners Data By Admin*/
 app.get('/api/admin/doners',async(req,res)=>{
   try{
     const list= await Doner.find()
@@ -313,12 +315,13 @@ app.get('/api/admin/doners',async(req,res)=>{
   }
 })
 
+/*Donar Updation By Admin*/
 app.put('/api/admin/updateDoner/:id',async(req,res)=>{
   try{
       const id=req.params.id
       const { Name, Age, Gender, Dob, Phone, Email, BloodGroup, Address, MedicalHistory, LastBloodDonate } = req.body;
       const result = await Doner.updateOne({ _id: id },
-        { $set: {Image: req.file.filename,Name:Name,Age:Age,Gender:Gender,Dob:Dob,Phone:Phone,
+        { $set: {Name:Name,Age:Age,Gender:Gender,Dob:Dob,Phone:Phone,
           Email:Email,BloodGroup:BloodGroup,Address:Address,MedicalHistory:MedicalHistory,
           LastBloodDonate:LastBloodDonate} });
         
@@ -330,6 +333,7 @@ app.put('/api/admin/updateDoner/:id',async(req,res)=>{
   }
 })
 
+/*Doner Deletion By the Admin*/
 app.delete('/api/admin/donerDelete/:id',async(req,res)=>{
   try{
     const id=req.params.id
@@ -340,6 +344,8 @@ app.delete('/api/admin/donerDelete/:id',async(req,res)=>{
     res.status(500).send({message:'server error'})
   }
 })
+
+
 
 app.listen(PORT,()=>{
     console.log("server running")

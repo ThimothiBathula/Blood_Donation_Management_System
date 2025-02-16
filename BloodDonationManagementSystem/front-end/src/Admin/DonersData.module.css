@@ -167,13 +167,26 @@ tr td.buttons{
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: space-around; */
+    overflow-y: scroll;
 }
+.create::-webkit-scrollbar{
+    width:5px;
+}
+.create::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+.create::-webkit-scrollbar-thumb {
+    background:red;
+  }
+.create::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
 .create .content{
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
+    
 }
 .CreatePop{
     width:100%;
@@ -316,7 +329,7 @@ tr td.buttons{
     justify-content: center;
 }
 .confirm .pop{
-    width:400px;
+    width:600px;
     height:200px;
     background-color: white;
     border-radius: 10px;

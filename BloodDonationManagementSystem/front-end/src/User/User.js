@@ -26,14 +26,9 @@ const User=()=>{
                 'token': token
               }
             }
-            
-            
         )
-        console.log(response.status)
         setLoading(false);
-        console.log(response.data)
         setData(response.data)
-        // console.log(data)
     }
     catch(err){
         console.log(err)
@@ -74,7 +69,7 @@ const User=()=>{
         </div>
          ))
               ) : (
-                 <p>No users available</p>
+                 <p>No Submits available</p>
               )}
          </div>
 
