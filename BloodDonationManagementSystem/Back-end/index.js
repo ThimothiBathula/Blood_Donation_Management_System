@@ -32,6 +32,8 @@ const Doner=require("./models/Doner")
 const Admin=require("./models/Admin")
 const Contact=require("./models/Contact");
 
+
+/*user operations*/
 app.post('/api/register', async (req, res) => {
     try {
       const { username,email, password } = req.body;
@@ -98,15 +100,6 @@ app.post('/api/login', async (req, res) => {
     }
   });
 
-app.get('/api/users', async(req,res)=>{
-    try {
-      const users = await User.find();
-      res.status(200).json(users);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-);
 
 
 app.put('/api/update/:id',async(req,res)=>{
@@ -257,9 +250,34 @@ app.get('/api/contacts',async(req,res)=>{
 
 
 
+const AdminTokenVerify = (req, res, next) => {
+  const token = req.headers['token'];
+
+  if (!token) {
+    return res.status(403).send('Access denied. No token provided.');
+  }
+  jwt.verify(token, AdminSecretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).send('Invalid or expired token');
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
+app.get('/api/users',AdminTokenVerify, async(req,res)=>{
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    console.log(err);
+  }
+}
+);
 
 
-app.get('/admins',async(req,res)=>{
+
+app.get('/admins',AdminTokenVerify,async(req,res)=>{
   try{
     const admins= await Admin.find()
     res.status(200).json(admins)
@@ -270,9 +288,9 @@ app.get('/admins',async(req,res)=>{
   
 })
 
-app.post('/adminReg',(req,res)=>{
-  const{UserName,Password}=req.body
+app.post('/adminReg',AdminTokenVerify,(req,res)=>{
   try{
+    const{UserName,Password}=req.body
       const newAdmin=new Admin({UserName,Password})
       newAdmin.save()
       res.status(200).send({message:"Success to create Admin"})
@@ -282,9 +300,44 @@ app.post('/adminReg',(req,res)=>{
   }
 
 })
-app.post('/adminLog', async(req,res)=>{
-  const {UserName,Password}=req.body
+app.delete('/admin/delete/:id',AdminTokenVerify,async(req,res)=>{
   try{
+    const id= req.params.id
+    const result= await Admin.deleteOne({_id:id})
+    console.log(result)
+    if(result['acknowledged']==true){
+    res.status(200).send({message:"Admin Deleted Sucessfull"})
+    }
+    res.status(400).send({message:"User Not Found"})
+  }catch(err){
+    res.status(500).send({message:"server Error"})
+  }
+})
+
+app.put('/admin/update/:id',AdminTokenVerify,async(req,res)=>{
+  try{
+    const userId=req.params.id;
+    const {UserName,Password} = req.body;
+    const result = await Admin.updateOne({ _id: userId },
+      { $set: {UserName:UserName,Password:Password} });
+
+    if (result.modifiedCount === 1) {
+      res.status(200).json({
+        message: 'User updated successfully'
+      });
+    } else {
+      res.status(404).json({
+        message: 'User not found or no changes made'
+      });
+    } 
+  }
+  catch(err){
+    res.status(500).send({message:"Server Error"})
+  }
+})
+app.post('/adminLog', async(req,res)=>{
+  try{
+    const {UserName,Password}=req.body
     const AdminUser=await Admin.findOne({UserName})
     if(!AdminUser){
       return res.status(401).json({message:'Invalid UserName or Password'})
@@ -304,7 +357,7 @@ app.post('/adminLog', async(req,res)=>{
 
 
 /*View Doners Data By Admin*/
-app.get('/api/admin/doners',async(req,res)=>{
+app.get('/api/admin/doners',AdminTokenVerify,async(req,res)=>{
   try{
     const list= await Doner.find()
     res.status(200).send({data:list})
@@ -316,7 +369,7 @@ app.get('/api/admin/doners',async(req,res)=>{
 })
 
 /*Donar Updation By Admin*/
-app.put('/api/admin/updateDoner/:id',async(req,res)=>{
+app.put('/api/admin/updateDoner/:id',AdminTokenVerify,async(req,res)=>{
   try{
       const id=req.params.id
       const { Name, Age, Gender, Dob, Phone, Email, BloodGroup, Address, MedicalHistory, LastBloodDonate } = req.body;
@@ -334,7 +387,7 @@ app.put('/api/admin/updateDoner/:id',async(req,res)=>{
 })
 
 /*Doner Deletion By the Admin*/
-app.delete('/api/admin/donerDelete/:id',async(req,res)=>{
+app.delete('/api/admin/donerDelete/:id',AdminTokenVerify,async(req,res)=>{
   try{
     const id=req.params.id
     const response= await Doner.findByIdAndDelete({_id:id})

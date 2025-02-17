@@ -15,7 +15,12 @@ const DonersData=()=>{
 
         const Get= async()=>{
             try{
-                let res= await axios.get('http://localhost:4000/api/admin/doners')
+                let token=localStorage.getItem("Admin")
+                let res= await axios.get('http://localhost:4000/api/admin/doners',{
+                    headers:{
+                        "token":token
+                    }
+                })
                 setData(res.data.data)
             }
             catch(err){
@@ -35,7 +40,12 @@ const DonersData=()=>{
         const Delete=async()=>{
                 try{
                     if(DonerId){
-                    let res= await axios.delete('http://localhost:4000/api/admin/donerDelete/'+DonerId)
+                        const token=localStorage.getItem('Admin')
+                    let res= await axios.delete('http://localhost:4000/api/admin/donerDelete/'+DonerId,{
+                        headers: {
+                            'token': token
+                          }
+                    })
                     }
                     setDonerId(null)
                     setConfirm(false)
@@ -59,20 +69,26 @@ const DonersData=()=>{
             })
         }
         const updateDetails=async(data)=>{
-            let d = {
-                Name:data.Name,
-                Age:data.Age,
-                Gender:data.Gender,
-                Dob:data.Dob,
-                Phone:data.Phone,
-                Email:data.Email,
-                BloodGroup:data.BloodGroup,
-                Address:data.Address,
-                MedicalHistory:data.MedicalHistory,
-                LastBloodDonate:data.LastBloodDonate
-            }
+           
                 try{
-                    let response= await axios.put('http://localhost:4000/api/admin/updateDoner/'+data.id,d)
+                    let d = {
+                        Name:data.Name,
+                        Age:data.Age,
+                        Gender:data.Gender,
+                        Dob:data.Dob,
+                        Phone:data.Phone,
+                        Email:data.Email,
+                        BloodGroup:data.BloodGroup,
+                        Address:data.Address,
+                        MedicalHistory:data.MedicalHistory,
+                        LastBloodDonate:data.LastBloodDonate
+                    }
+                    const token=localStorage.getItem('Admin')
+                    let response= await axios.put('http://localhost:4000/api/admin/updateDoner/'+data.id,d,{
+                        headers:{
+                            "token":token
+                        }
+                    })
                     console.log(response.data.message)
                     setUpdate(false)
                     setTimeout(()=>{

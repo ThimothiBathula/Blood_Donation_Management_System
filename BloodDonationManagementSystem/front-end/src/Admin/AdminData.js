@@ -38,7 +38,6 @@ const SkeletonTable = () => {
 const AdminData=()=>{
     const [UserName,SetUserName]=useState("")
     const [Update,setUpdate]=useState(false)
-    const [email,SetEmail]=useState("") 
     const [Password,SetPassword]=useState("")
     const [msg,Setmsg]=useState('')
     const [users,Setusers]=useState(null)
@@ -54,14 +53,15 @@ const AdminData=()=>{
     }
 
     const updateDetails=async(data)=>{
-        let d = {
-            username: data.username,
-            email: data.email,
-            password: data.password
-        }
             try{
-                let response= await axios.put('http://localhost:4000/api/update/'+data.id,d)
-                console.log(response.data.message)
+                let {UserName,Password}=data
+                // console.log(d)
+                const token=localStorage.getItem('Admin')
+                let response= await axios.put('http://localhost:4000/admin/update/'+data.id,{UserName,Password},{
+                    headers: {
+                        'token': token
+                      }
+                })
                 setUpdate(false)
                 setTimeout(()=>{
                     Setmsg("")
@@ -75,12 +75,18 @@ const AdminData=()=>{
     
    const Submit=async()=>{
          try{
+            const token=localStorage.getItem('Admin')
             const response=await axios.post("http://localhost:4000/adminReg",{
                 UserName,
                 Password
-            })
-            console.log(response)
-            console.log(username,email,password)
+            },{headers: {
+                'token': token
+              }})
+              setTimeout(()=>{
+                Setmsg("")
+            },5000)
+            Setmsg("Created New Admin Success")
+            SetPop(false)
             Getusers()
             SetCrPop(false)
 
@@ -94,7 +100,12 @@ const AdminData=()=>{
 
 
     const Getusers=async()=>{
-    let res=await axios.get('http://localhost:4000/admins')
+        const token=localStorage.getItem('Admin')
+    let res=await axios.get('http://localhost:4000/admins',{
+        headers: {
+            'token': token
+          }
+    })
     Setusers(res.data)
    }
    useEffect(()=>{
@@ -106,7 +117,12 @@ const AdminData=()=>{
 
 const DeleteUser=async(id)=>{
     try{
-    let res=await axios.delete('http://localhost:4000/api/delete/'+id)
+        const token=localStorage.getItem('Admin')
+        let res=await axios.delete('http://localhost:4000/admin/delete/'+id,{
+        headers: {
+            'token': token
+          }
+    })
     setTimeout(()=>{
         Setmsg("")
     },5000)
@@ -121,7 +137,7 @@ catch(err){
 
 const update=(e)=>{
     setUpdate(true)
-    setUpdateUser({id:e._id,username:e.username,email:e.email,password:e.password})
+    setUpdateUser({id:e._id,UserName:e.UserName,Password:e.Password})
 }
 const open=(e)=>{
     SetPop(true)
@@ -162,7 +178,7 @@ const OpenCreate=()=>{
                     {
                     users.map((e)=>{
                         return(
-                        <tr key={e.UserName} className={styles.content}>
+                        <tr key={e._id} className={styles.content}>
                             <td>{e._id.slice(-3)}</td>
                             <td>{e.UserName}</td>
                             <td>{e.Password}</td>
@@ -210,13 +226,6 @@ const OpenCreate=()=>{
                 <input type="text" placeholder="User Name" onChange={(e)=>{
                  SetUserName(e.target.value)}}/>
                 </div>
-                <div className={styles.email}>
-                <input type="email" placeholder="Email"
-                 onChange={(e)=>{
-                    SetEmail(e.target.value)
-        
-                }}/>
-                </div>
                 <div className={styles.pass}>
                 <input type="password" placeholder="Password"
                 onChange={(e)=>{
@@ -241,18 +250,14 @@ const OpenCreate=()=>{
                 <div className={styles.content}>
                 <h1>Update User</h1>
                 <div className={styles.Username}>
-                <input type="text" placeholder="User Name" name="username" onChange={changeFormData} value={UpdateUser.username}/>
+                <input type="text" placeholder="User Name" name="UserName" onChange={changeFormData} value={UpdateUser.UserName}/>
                 </div>
-                <div className={styles.email}>
-                <input type="email" placeholder="Email"
-                name="email"
-                 onChange={changeFormData} value={UpdateUser.email}/>
-                </div>
+                
                 <div className={styles.pass}>
                 <input type="password" placeholder="Password"
-                name="password"
+                name="Password"
                 onChange={changeFormData}
-                value={UpdateUser.password}/>
+                value={UpdateUser.Password}/>
                 </div>
                 <div className={styles.btn}>
                 <button onClick={()=>{

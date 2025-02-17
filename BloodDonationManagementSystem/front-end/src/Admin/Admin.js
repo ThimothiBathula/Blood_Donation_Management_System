@@ -61,7 +61,12 @@ const Admin=()=>{
             password: data.password
         }
             try{
-                let response= await axios.put('http://localhost:4000/api/update/'+data.id,d)
+                const token=localStorage.getItem('Admin')
+                let response= await axios.put('http://localhost:4000/api/update/'+data.id,d,{
+                    headers: {
+                        'token': token
+                      }
+                })
                 console.log(response.data.message)
                 setUpdate(false)
                 setTimeout(()=>{
@@ -76,11 +81,16 @@ const Admin=()=>{
     
    const Submit=async()=>{
          try{
+            const token=localStorage.getItem('Admin')
             const response=await axios.post("http://localhost:4000/api/register",{
                 username,
                 email,
-                password
-            })
+                password,
+                headers: {
+                    'token': token
+                  }
+            },
+        )
             console.log(response)
             console.log(username,email,password)
             Getusers()
@@ -96,7 +106,12 @@ const Admin=()=>{
 
 
     const Getusers=async()=>{
-    let res=await axios.get('http://localhost:4000/api/users')
+        const token=localStorage.getItem('Admin')
+    let res=await axios.get('http://localhost:4000/api/users',{
+        headers: {
+            'token': token
+          }
+    })
     Setusers(res.data)
    }
    useEffect(()=>{
@@ -108,7 +123,12 @@ const Admin=()=>{
 
 const DeleteUser=async(id)=>{
     try{
-    let res=await axios.delete('http://localhost:4000/api/delete/'+id)
+    const token=localStorage.getItem('Admin')
+    let res=await axios.delete('http://localhost:4000/api/delete/'+id,{
+        headers: {
+            'token': token
+          }
+    })
     setTimeout(()=>{
         Setmsg("")
     },5000)
