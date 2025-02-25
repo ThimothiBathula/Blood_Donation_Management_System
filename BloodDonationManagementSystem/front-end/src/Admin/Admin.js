@@ -1,6 +1,7 @@
 import styles from "./admin.module.css"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
 
 const SkeletonTable = () => {
   const a=[1,2,3,4]
@@ -37,6 +38,7 @@ const SkeletonTable = () => {
 
 
 const Admin=()=>{
+    const navigate = useNavigate();
     const [username,SetUserName]=useState("")
     const [Update,setUpdate]=useState(false)
     const [email,SetEmail]=useState("") 
@@ -48,6 +50,22 @@ const Admin=()=>{
     const [temp,Settemp]=useState(null)
     const [UpdateUser,setUpdateUser]=useState()
     
+    const checkSessionExpiration = () => {
+        const loginTime = localStorage.getItem("AdminloginTime");
+    
+        if (loginTime) {
+            const currentTime = Date.now();
+            const oneHour = 60 * 60 * 1000;
+    
+            if (currentTime - loginTime > oneHour) {
+                localStorage.removeItem("Admin");
+                localStorage.removeItem("loginTime");
+                navigate("/", { state: { message: "Your session has expired. Please login again." } });
+                return true;
+            }
+        }
+        return false;
+    };
 
     let changeFormData = (event) => {
         const { name, value } = event.target;
@@ -55,13 +73,15 @@ const Admin=()=>{
     }
 
     const updateDetails=async(data)=>{
-        let d = {
-            username: data.username,
-            email: data.email,
-            password: data.password
-        }
+                if (checkSessionExpiration()) return;
             try{
-                const token=localStorage.getItem('Admin')
+                let d = {
+                    username: data.username,
+                    email: data.email,
+                    password: data.password
+                }
+                const Admin =JSON.parse(localStorage.getItem('Admin'))
+                const token=Admin.token
                 let response= await axios.put('http://localhost:4000/api/update/'+data.id,d,{
                     headers: {
                         'token': token
@@ -80,8 +100,10 @@ const Admin=()=>{
     }
     
    const Submit=async()=>{
+            if (checkSessionExpiration()) return;
          try{
-            const token=localStorage.getItem('Admin')
+            const Admin =JSON.parse(localStorage.getItem('Admin'))
+            const token=Admin.token
             const response=await axios.post("http://localhost:4000/api/register",{
                 username,
                 email,
@@ -99,20 +121,45 @@ const Admin=()=>{
 
          }
          catch(err){
-            console.log(err)
+            if (err.response) {
+                const statusCode = err.response.status;
+                if(statusCode===401){
+                    localStorage.removeItem('Admin')
+                    navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                    return null;
+    
+                }
+            }
+    
          }
         
     }
 
 
     const Getusers=async()=>{
-        const token=localStorage.getItem('Admin')
-    let res=await axios.get('http://localhost:4000/api/users',{
+        if (checkSessionExpiration()) return;
+        try{
+        const token=JSON.parse(localStorage.getItem('Admin'))
+        const Admin=token.token
+        let res=await axios.get('http://localhost:4000/api/users',{
         headers: {
-            'token': token
+            'token':Admin
           }
-    })
+        })
     Setusers(res.data)
+    }
+    catch(err){
+        if (err.response) {
+            const statusCode = err.response.status;
+            if(statusCode===401){
+                localStorage.removeItem('Admin')
+                navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                navigate(0);
+                return null;
+
+            }
+        }
+    }
    }
    useEffect(()=>{
     setTimeout(()=>{
@@ -122,8 +169,10 @@ const Admin=()=>{
 
 
 const DeleteUser=async(id)=>{
+    if (checkSessionExpiration()) return;
     try{
-    const token=localStorage.getItem('Admin')
+        const Admin =JSON.parse(localStorage.getItem('Admin'))
+        const token=Admin.token
     let res=await axios.delete('http://localhost:4000/api/delete/'+id,{
         headers: {
             'token': token
@@ -137,7 +186,15 @@ const DeleteUser=async(id)=>{
     SetPop(false)
 }
 catch(err){
-    console.log(err)
+    if (err.response) {
+        const statusCode = err.response.status;
+        if(statusCode===401){
+            localStorage.removeItem('Admin')
+            navigate("/", { state: { message: "Your login is expired. Please login again." } });
+            return null;
+        }
+    }
+
 }
 }
 

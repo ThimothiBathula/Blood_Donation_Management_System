@@ -15,6 +15,9 @@ import AdminLog from './Admin-Login/AdminLog';
 import AdminData from './Admin/AdminData';
 import User from './User/User';
 import DonersData from './Admin/DonersData';
+import AdminPrivateRout from './Admin/AdminPrivateRout';
+import UserAuthenticate from './User/UserAuthenticate';
+import Contacts from './Admin/Contacts';
 // import Users from './Admin/Users';
 function App() {
   return (
@@ -26,17 +29,25 @@ function App() {
       <Route path='/login' element={<Login/>}/>
       <Route path='/reg' element={<Register/>}/>
       <Route path='/doners' element={<Doners/>}/>
-      <Route path='/donate' element={<Donate/>}/>
+      
       <Route path='/doner' element={<DonerPage/>}/>
       <Route path='/contact' element={<Contact/>}/>
       <Route path='/about' element={<About/>}/>
-      <Route path='/about' element={<About/>}/>
-      <Route path='/users' element={<Admin></Admin>}/>
-      <Route path='/admins' element={<AdminData/>}/>
+      <Route element={<UserAuthenticate/>}>
+           <Route path='/donate' element={<Donate/>}/>
+           <Route path='/submits' element={<User/>}/>
+      </Route>
       {/* <Route path='/user' element={<Users/>}/> */}
       <Route path='/adminLog' element={<AdminLog/>}/>
-      <Route path='/submits' element={<User/>}/>
-      <Route path='/donersList' element={<DonersData/>}/>
+    
+      {/* <Route element={<AdminPrivateRout />}> */}
+          <Route path="/users" element={<Admin />} />
+          <Route path="/admins" element={<AdminData />} />
+          <Route path="/donersList" element={<DonersData />} />
+          <Route path="/contacts" element={<Contacts/>} />
+          
+      {/* </Route> */}
+
 
     </Routes>
    

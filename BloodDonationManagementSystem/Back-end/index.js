@@ -1,14 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const session = require('express-session')
 const jwt=require('jsonwebtoken')
 const secretKey="THIMOTHI"
 const AdminSecretKey="Admin"
 const multer=require('multer')
 const path = require('path');
-
-const MongoDBStore = require('connect-mongodb-session')(session);
 const app = express();
 const PORT =4000;
 const cors =require('cors')
@@ -45,38 +41,29 @@ app.post('/api/register', async (req, res) => {
       const newUser = new User({ username,email, password: password });
       await newUser.save();
   
-      res.status(201).json({ message: 'User registered successfully' });
+      return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
       console.error('Error registering user:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
 
-const store = new MongoDBStore({
-    uri:"mongodb://localhost:27017/users",
-    collection: "mySession"
-})
-app.use(session({
-    secret: "This is a secret",
-    resave: false,
-    saveUninitialized: true,
-    store: store
-}))
-const checkAuth = (req, res, next) => {
-    if (req.session.isAuthicated) {
-        next()
-    } else {
-        res.redirect('/signup')
-    }
-}
-const Adminauth = (req, res, next) => {
-  if (req.session2.isAuthicated) {
-      next()
-  } else {
-      res.redirect('/signup')
+const UserTokenVerify = (req, res, next) => {
+  const token = req.headers['token'];
+
+  if (!token) {
+    return res.status(403).send('Access denied. No token provided.');
   }
-}
+  jwt.verify(token,secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).send('Invalid or expired token');
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
 app.post('/api/login', async (req, res) => {
     try {
 
@@ -92,48 +79,12 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ message: 'Incorrect UserName or password' });
       }
       let token=jwt.sign({username,id},secretKey,{expiresIn:'1h'})
-      res.status(200).json({ message: 'Authentication successful',token:token });
-      req.session.isAuthicated = true
+      return res.status(200).json({ message: 'Authentication successful',token:token });
     } catch (error) {
       console.error('Error logging in:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   });
-
-
-
-app.put('/api/update/:id',async(req,res)=>{
-  try{
-    const userId = req.params.id;
-    const {username,email,password} = req.body;
-    
-    const result = await User.updateOne({ _id: userId },{ $set: {username:username,email:email,password:password} });
-
-    if (result.modifiedCount === 1) {
-      res.status(200).json({
-        message: 'User updated successfully'
-      });
-    } else {
-      res.status(404).json({
-        message: 'User not found or no changes made'
-      });
-     }
-     } catch (err) {
-    res.status(500).json({ message: 'Error updating donor', error: err });
-  }
-})
-
-app.delete('/api/delete/:id',async(req,res)=>{
-  try{
-    const userId=req.params.id
-    const result = await User.deleteOne({_id:userId});
-    res.status(200).json({message:'Successfully Deleted User',response:result})
-  }
-  catch(err){
-    console.log(err)
-    res.status(500).json({message:'Server Error'})
-  }
-})
 
 
 
@@ -148,7 +99,7 @@ const ds = multer.diskStorage({
 
 const upload = multer({ storage: ds });
 
-app.post("/api/donate", upload.single('Image'), async (req, res) => {
+app.post("/api/donate",UserTokenVerify, upload.single('Image'), async (req, res) => {
   const token=req.headers
   const { Name, Age, Gender, Dob, Phone, Email, BloodGroup, Address, MedicalHistory, LastBloodDonate } = req.body;
   if (!req.file) {
@@ -180,24 +131,15 @@ app.post("/api/donate", upload.single('Image'), async (req, res) => {
     });
 
     await newDonate.save();
-    res.status(201).send({ message: 'Submission successful!' });
+    return res.status(201).send({ message: 'Submission successful!' });
   } catch (err) {
     console.error(err);
-    res.status(500).send({ message: 'Internal server error. Could not save donation.' });
+    return res.status(500).send({ message: 'Internal server error. Could not save donation.' });
   }
 });
 
-app.delete("/api/deletesub/:id",async(req,res)=>{
-  try{
-      const id= req.params.id
-      const result= await Doner.deleteOne({_id:id})
-      res.status(200).send({message:"successfully deleted",result:result})
-  }
-  catch(error){
-    res.status(500).send({message:"server error"})
-  }
-})
-app.get('/api/submits', async (req, res) => {
+
+app.get('/api/submits',UserTokenVerify, async (req, res) => {
   try {
     const token = req.headers.token;
 
@@ -221,12 +163,12 @@ app.get('/api/submits', async (req, res) => {
 });
 
 
-app.get("/api/doners",async (req,res)=>{
+app.get("/api/doners",UserTokenVerify,async (req,res)=>{
   try {
     const doners = await Doner.find();
-    res.status(200).json(doners);
+    return res.status(200).json(doners);
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({message:"server error"});
   }
 })
 
@@ -234,24 +176,16 @@ app.post('/api/contact',async(req,res)=>{
   const{Name,Email,Message}=req.body
   const c= new Contact({Name,Email,Message})
   await c.save()
-  res.status(200).send({message:"Success"})
+  return res.status(200).send({message:"Success"})
 
 })
 
-app.get('/api/contacts',async(req,res)=>{
-  try{
-    const contacts= await Contact.find()
-    res.status(200).send(contacts)
-  }
-  catch(err){
-    console.log(err)
-  }
-})
 
 
-
+/* Admin Auth*/
 const AdminTokenVerify = (req, res, next) => {
   const token = req.headers['token'];
+  // console.log(token)
 
   if (!token) {
     return res.status(403).send('Access denied. No token provided.');
@@ -264,26 +198,99 @@ const AdminTokenVerify = (req, res, next) => {
     next();
   });
 };
+app.get('/api/contacts',AdminTokenVerify,async(req,res)=>{
+  try{
+    const contacts= await Contact.find()
+    return res.status(200).send(contacts)
+  }
+  catch(err){
+    console.log(err)
+    return res.status(500).json({message:"server error"});
+  }
+})
+app.delete("/api/deletesub/:id",UserTokenVerify,async(req,res)=>{
+  try{
+      const id= req.params.id
+      const result= await Doner.deleteOne({_id:id})
+      return res.status(200).send({message:"successfully deleted",result:result})
+  }
+  catch(error){
+    return res.status(500).send({message:"server error"})
+  }
+})
+
+app.put('/api/update/:id',async(req,res)=>{
+  try{
+    const userId = req.params.id;
+    const {username,email,password} = req.body;
+    
+    const result = await User.updateOne({ _id: userId },{ $set: {username:username,email:email,password:password} });
+
+    if (result.modifiedCount === 1) {
+      return res.status(200).json({
+        message: 'User updated successfully'
+      });
+    } else {
+      return res.status(404).json({
+        message: 'User not found or no changes made'
+      });
+     }
+     } catch (err) {
+      return res.status(500).json({ message: 'Error updating donor', error: err });
+  }
+})
+
+app.delete('/api/delete/:id',async(req,res)=>{
+  try{
+    const userId=req.params.id
+    const result = await User.deleteOne({_id:userId});
+    return res.status(200).json({message:'Successfully Deleted User',response:result})
+  }
+  catch(err){
+    console.log(err)
+    return res.status(500).json({message:'Server Error'})
+  }
+})
+
 
 app.get('/api/users',AdminTokenVerify, async(req,res)=>{
   try {
     const users = await User.find();
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (err) {
     console.log(err);
+    return res.status(500).json({message:"server error"});
   }
 }
 );
 
+/*User token verify*/
+app.get('/user/token/verify', (req, res) => {
+  try {
+    const UserToken = req.headers['token'];
 
+    if (!UserToken) {
+      return res.status(403).send('Access denied. No token provided.');
+    }
+
+    jwt.verify(UserToken, secretKey, (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ message: 'Invalid or expired token' });
+      }
+      return res.status(200).send("success");
+    });
+  } catch (err) {
+    return res.status(500).send({ message: 'Server error' });
+  }
+});
 
 app.get('/admins',AdminTokenVerify,async(req,res)=>{
   try{
     const admins= await Admin.find()
-    res.status(200).json(admins)
+    return res.status(200).json(admins)
   }
   catch(err){
-    res.status(500).json({message:'server Error'})
+    return res.status(500).json({message:'server Error'})
   }
   
 })
@@ -293,10 +300,10 @@ app.post('/adminReg',AdminTokenVerify,(req,res)=>{
     const{UserName,Password}=req.body
       const newAdmin=new Admin({UserName,Password})
       newAdmin.save()
-      res.status(200).send({message:"Success to create Admin"})
+      return res.status(200).send({message:"Success to create Admin"})
   }
   catch(err){
-      res.status(401).send({message:'Create error'})
+    return res.status(401).send({message:'Create error'})
   }
 
 })
@@ -306,11 +313,11 @@ app.delete('/admin/delete/:id',AdminTokenVerify,async(req,res)=>{
     const result= await Admin.deleteOne({_id:id})
     console.log(result)
     if(result['acknowledged']==true){
-    res.status(200).send({message:"Admin Deleted Sucessfull"})
+      return res.status(200).send({message:"Admin Deleted Sucessfull"})
     }
-    res.status(400).send({message:"User Not Found"})
+    return res.status(400).send({message:"User Not Found"})
   }catch(err){
-    res.status(500).send({message:"server Error"})
+    return res.status(500).send({message:"server Error"})
   }
 })
 
@@ -322,17 +329,17 @@ app.put('/admin/update/:id',AdminTokenVerify,async(req,res)=>{
       { $set: {UserName:UserName,Password:Password} });
 
     if (result.modifiedCount === 1) {
-      res.status(200).json({
+      return res.status(200).json({
         message: 'User updated successfully'
       });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         message: 'User not found or no changes made'
       });
     } 
   }
   catch(err){
-    res.status(500).send({message:"Server Error"})
+    return res.status(500).send({message:"Server Error"})
   }
 })
 app.post('/adminLog', async(req,res)=>{
@@ -346,25 +353,44 @@ app.post('/adminLog', async(req,res)=>{
       return res.status(401).json({message:'Invalid UseNAme or Password'})
     }
     let token=jwt.sign({UserName},AdminSecretKey,{expiresIn:'1h'})
-      res.status(200).json({ message: 'Authentication successful',token:token });
+    return res.status(200).json({ message: 'Authentication successful',token:token });
   }
   catch(err){
-    res.status(500).json({message:'Server Error'})
     console.log(err)
+    return res.status(500).json({message:'Server Error'})
+   
   }
 
 })
 
 
 /*View Doners Data By Admin*/
+app.get('/admin/token/verify',(req,res)=>{
+  try{
+      const AdminToken=req.headers['token']
+      if (!AdminToken) {
+        return res.status(403).send('Access denied. No token provided.');
+      }
+      jwt.verify(AdminToken, AdminSecretKey, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({message:'Invalid or expired token'});
+        }
+      })
+      return res.status(200).send("success")
+  }
+  catch(err){
+    return res.status(500).send({message:'server error'})
+  }
+})
 app.get('/api/admin/doners',AdminTokenVerify,async(req,res)=>{
   try{
     const list= await Doner.find()
-    res.status(200).send({data:list})
+    return res.status(200).send({data:list})
   }
   catch(error){
-    res.status(500).send({message:'server error'})
-      console.log(error)
+    console.log(error)
+    return res.status(500).send({message:'server error'})
+      
   }
 })
 
@@ -378,11 +404,11 @@ app.put('/api/admin/updateDoner/:id',AdminTokenVerify,async(req,res)=>{
           Email:Email,BloodGroup:BloodGroup,Address:Address,MedicalHistory:MedicalHistory,
           LastBloodDonate:LastBloodDonate} });
         
-      res.status(200).send({message:"Success"})
+          return res.status(200).send({message:"Success"})
   
       }
   catch(err){
-    res.status(500).send({message:'server error'})
+    return res.status(500).send({message:'server error'})
   }
 })
 
@@ -391,10 +417,10 @@ app.delete('/api/admin/donerDelete/:id',AdminTokenVerify,async(req,res)=>{
   try{
     const id=req.params.id
     const response= await Doner.findByIdAndDelete({_id:id})
-    res.status(200).send({message:'Delete Success'})
+    return res.status(200).send({message:'Delete Success'})
   }
   catch(err){
-    res.status(500).send({message:'server error'})
+    return res.status(500).send({message:'server error'})
   }
 })
 

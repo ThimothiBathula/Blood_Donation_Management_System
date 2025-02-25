@@ -24,7 +24,13 @@ const SkeletonLoader = () => (
 const Doners=()=>{
     const [doners,setDoners]=useState(null)
     const GetDoners=async()=>{
-    let response= await axios.get('http://localhost:4000/api/doners')
+        const token=localStorage.getItem('user')
+    let response= await axios.get('http://localhost:4000/api/doners',{
+        headers:{
+            'token':token
+        }
+    }
+    )
         setDoners(response.data)
     }
 useEffect(()=>{

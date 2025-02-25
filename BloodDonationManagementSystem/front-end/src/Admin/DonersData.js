@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import styles from './DonersData.module.css'
 import axios from 'axios'
-
+import { useNavigate } from "react-router-dom";
 const DonersData=()=>{
+        const navigate = useNavigate();
         const [data,setData]=useState()
         const [DeleteConfirm,setConfirm]=useState(false)
         const [DonerId,setDonerId]=useState()
@@ -12,10 +13,28 @@ const DonersData=()=>{
         useEffect(()=>{
             Get()
         },[])
+        const checkSessionExpiration = () => {
+            const loginTime = localStorage.getItem("loginTime");
+        
+            if (loginTime) {
+                const currentTime = Date.now();
+                const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+        
+                if (currentTime - loginTime > oneHour) {
+                    localStorage.removeItem("Admin");
+                    localStorage.removeItem("AdminloginTime");
+                    navigate("/", { state: { message: "Your session has expired. Please login again." } });
+                    return true;
+                }
+            }
+            return false;
+        };
 
         const Get= async()=>{
+            if (checkSessionExpiration()) return;
             try{
-                let token=localStorage.getItem("Admin")
+                const Admin =JSON.parse(localStorage.getItem('Admin'))
+                const token=Admin.token
                 let res= await axios.get('http://localhost:4000/api/admin/doners',{
                     headers:{
                         "token":token
@@ -24,7 +43,16 @@ const DonersData=()=>{
                 setData(res.data.data)
             }
             catch(err){
-                console.log(err)
+                if (err.response) {
+                    const statusCode = err.response.status;
+                    if(statusCode===401){
+                        localStorage.removeItem('Admin')
+                        navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                        return null;
+        
+                    }
+                }
+        
             }
         }
 
@@ -38,9 +66,11 @@ const DonersData=()=>{
             setDonerId(id)
         }
         const Delete=async()=>{
+                if (checkSessionExpiration()) return;
                 try{
                     if(DonerId){
-                        const token=localStorage.getItem('Admin')
+                        const Admin =JSON.parse(localStorage.getItem('Admin'))
+                        const token=Admin.token
                     let res= await axios.delete('http://localhost:4000/api/admin/donerDelete/'+DonerId,{
                         headers: {
                             'token': token
@@ -51,7 +81,16 @@ const DonersData=()=>{
                     setConfirm(false)
                 }
                 catch(err){
-                    console.log(err)
+                    if (err.response) {
+                        const statusCode = err.response.status;
+                        if(statusCode===401){
+                            localStorage.removeItem('Admin')
+                            navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                            return null;
+            
+                        }
+                    }
+            
                 }
         }
 
@@ -69,7 +108,7 @@ const DonersData=()=>{
             })
         }
         const updateDetails=async(data)=>{
-           
+                if (checkSessionExpiration()) return;
                 try{
                     let d = {
                         Name:data.Name,
@@ -83,7 +122,8 @@ const DonersData=()=>{
                         MedicalHistory:data.MedicalHistory,
                         LastBloodDonate:data.LastBloodDonate
                     }
-                    const token=localStorage.getItem('Admin')
+                    const Admin =JSON.parse(localStorage.getItem('Admin'))
+                    const token=Admin.token
                     let response= await axios.put('http://localhost:4000/api/admin/updateDoner/'+data.id,d,{
                         headers:{
                             "token":token
@@ -97,7 +137,16 @@ const DonersData=()=>{
                     Setmsg(response.data.message)
                     Get()
                 }catch(err){
-                    console.log(err)
+                    if (err.response) {
+                        const statusCode = err.response.status;
+                        if(statusCode===401){
+                            localStorage.removeItem('Admin')
+                            navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                            return null;
+            
+                        }
+                    }
+            
                 }
         }
 
