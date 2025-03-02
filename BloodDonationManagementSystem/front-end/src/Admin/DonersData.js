@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import styles from './DonersData.module.css'
 import axios from 'axios'
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 const DonersData=()=>{
         const navigate = useNavigate();
@@ -13,28 +14,28 @@ const DonersData=()=>{
         useEffect(()=>{
             Get()
         },[])
-        const checkSessionExpiration = () => {
-            const loginTime = localStorage.getItem("loginTime");
+        // const checkSessionExpiration = () => {
+        //     const loginTime = localStorage.getItem("loginTime");
         
-            if (loginTime) {
-                const currentTime = Date.now();
-                const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+        //     if (loginTime) {
+        //         const currentTime = Date.now();
+        //         const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
         
-                if (currentTime - loginTime > oneHour) {
-                    localStorage.removeItem("Admin");
-                    localStorage.removeItem("AdminloginTime");
-                    navigate("/", { state: { message: "Your session has expired. Please login again." } });
-                    return true;
-                }
-            }
-            return false;
-        };
+        //         if (currentTime - loginTime > oneHour) {
+        //             localStorage.removeItem("Admin");
+        //             localStorage.removeItem("AdminloginTime");
+        //             navigate("/", { state: { message: "Your session has expired. Please login again." } });
+        //             navigate(0);
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // };
 
         const Get= async()=>{
-            if (checkSessionExpiration()) return;
+            // if (checkSessionExpiration()) return;
             try{
-                const Admin =JSON.parse(localStorage.getItem('Admin'))
-                const token=Admin.token
+            const token = Cookies.get("Admin")
                 let res= await axios.get('http://localhost:4000/api/admin/doners',{
                     headers:{
                         "token":token
@@ -46,7 +47,7 @@ const DonersData=()=>{
                 if (err.response) {
                     const statusCode = err.response.status;
                     if(statusCode===401){
-                        localStorage.removeItem('Admin')
+                        Cookies.remove("Admin");
                         navigate("/", { state: { message: "Your login is expired. Please login again." } });
                         return null;
         
@@ -66,11 +67,10 @@ const DonersData=()=>{
             setDonerId(id)
         }
         const Delete=async()=>{
-                if (checkSessionExpiration()) return;
+                // if (checkSessionExpiration()) return;
                 try{
                     if(DonerId){
-                        const Admin =JSON.parse(localStorage.getItem('Admin'))
-                        const token=Admin.token
+                        const token =Cookies.get("Admin")
                     let res= await axios.delete('http://localhost:4000/api/admin/donerDelete/'+DonerId,{
                         headers: {
                             'token': token
@@ -79,13 +79,15 @@ const DonersData=()=>{
                     }
                     setDonerId(null)
                     setConfirm(false)
+                    navigate(0)
                 }
                 catch(err){
                     if (err.response) {
                         const statusCode = err.response.status;
                         if(statusCode===401){
-                            localStorage.removeItem('Admin')
+                            Cookies.remove("Admin");
                             navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                            navigate(0);
                             return null;
             
                         }
@@ -108,22 +110,17 @@ const DonersData=()=>{
             })
         }
         const updateDetails=async(data)=>{
-                if (checkSessionExpiration()) return;
+                // if (checkSessionExpiration()) return;
                 try{
                     let d = {
                         Name:data.Name,
                         Age:data.Age,
-                        Gender:data.Gender,
-                        Dob:data.Dob,
                         Phone:data.Phone,
                         Email:data.Email,
                         BloodGroup:data.BloodGroup,
-                        Address:data.Address,
-                        MedicalHistory:data.MedicalHistory,
                         LastBloodDonate:data.LastBloodDonate
                     }
-                    const Admin =JSON.parse(localStorage.getItem('Admin'))
-                    const token=Admin.token
+                    const token = Cookies.get("Admin")
                     let response= await axios.put('http://localhost:4000/api/admin/updateDoner/'+data.id,d,{
                         headers:{
                             "token":token
@@ -140,8 +137,9 @@ const DonersData=()=>{
                     if (err.response) {
                         const statusCode = err.response.status;
                         if(statusCode===401){
-                            localStorage.removeItem('Admin')
+                            Cookies.remove("Admin");
                             navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                            navigate(0);
                             return null;
             
                         }
@@ -156,14 +154,17 @@ const DonersData=()=>{
              {
                             !data ?
                             <h1>loading..</h1>:
+                            <>
+                             <div className={styles.tableCap}>
+                                                Doners Data
+                                            </div>
                            <table className={styles.table}>
                             <thead>
                                 <tr className={styles.heading}>
                                     <td>ID</td>
                                     <td>NAME</td>
                                     <td>AGE</td>
-                                    <td>GENDER</td>
-                                    <td>USER NAME</td>
+                                    <td>USER ID</td>
                                     <td>ACTIONS</td>
                                 </tr>
                             </thead>
@@ -176,8 +177,7 @@ const DonersData=()=>{
                                         <td>{e._id.slice(-3)}</td>
                                         <td>{e.Name}</td>
                                         <td>{e.Age}</td>
-                                        <td>{e.Gender}</td>
-                                        <td>{e.username}</td>
+                                        <td>{e.User_id}</td>
 
                                         <td className={styles.buttons}>
                                             <button onClick={()=>{update(e)}}>Update</button>
@@ -191,6 +191,7 @@ const DonersData=()=>{
                             </tbody>
                             
                             </table>
+                            </>
                         
                         }
 
@@ -198,9 +199,11 @@ const DonersData=()=>{
             {DeleteConfirm && <div className={styles.confirm}>
                 <div className={styles.pop}>
                     <div className={styles.close} onClick={()=>ClosePop()} >❌</div>
+                    <div>
                     <h1>Are You Sure ?</h1>
                     <div className={styles.confirmbutton}>
                     <button className={styles.confirmBtn} onClick={()=>{Delete()}}>Confirm</button>
+                    </div>
                     </div>
                 </div>
                 </div>
@@ -222,17 +225,6 @@ const DonersData=()=>{
                             name="Age"
                              onChange={changeFormData} value={UpdateUser.Age}/>
                             </div>
-                            <div className={styles.pass}>
-                            <input type="text" placeholder="Gender"
-                            name="Gender"
-                            onChange={changeFormData}
-                            value={UpdateUser.Gender}/>
-                            </div>
-                            <div className={styles.email}>
-                            <input type="text" placeholder="DOB"
-                            name="Dob"
-                             onChange={changeFormData} value={UpdateUser.Dob}/>
-                            </div>
                             <div className={styles.email}>
                             <input type="email" placeholder="Phone"
                             name="Phone"
@@ -247,16 +239,6 @@ const DonersData=()=>{
                             <input type="email" placeholder="BloodGroup"
                             name="BloodGroup"
                              onChange={changeFormData} value={UpdateUser.BloodGroup}/>
-                            </div>
-                            <div className={styles.email}>
-                            <input type="email" placeholder="Address"
-                            name="Address"
-                             onChange={changeFormData} value={UpdateUser.Address}/>
-                            </div>
-                            <div className={styles.email}>
-                            <input type="email" placeholder="MedicalHistory"
-                            name="MedicalHistory"
-                             onChange={changeFormData} value={UpdateUser.MedicalHistory}/>
                             </div>
                             <div className={styles.email}>
                             <input type="email" placeholder="LastBloodDonate"

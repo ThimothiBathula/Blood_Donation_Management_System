@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import styles from './about.module.css'
 
 const About=()=>{
@@ -7,10 +8,10 @@ const About=()=>{
             <img src='about.png'/>
         </div>
         <div className={styles.boxes}>
-            <div>Donate</div>
-            <div>Login</div>
-            <div>Register</div>
-            <div>Doners</div>
+            <Link to='/donate'><div>Donate</div></Link>
+            <Link to='/login'><div>Login</div></Link>
+            <Link to='/reg'><div>Register</div></Link>
+            <Link to='/doners'><div>Doners</div></Link>
         </div>
         <div className={styles.content}>
             <h1>Types of donation</h1>

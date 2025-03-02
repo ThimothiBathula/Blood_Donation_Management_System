@@ -50,41 +50,39 @@ app.post('/api/register', async (req, res) => {
 
 
 const UserTokenVerify = (req, res, next) => {
-  const token = req.headers['token'];
-
+  const token = req.headers.token;
   if (!token) {
     return res.status(403).send('Access denied. No token provided.');
   }
-  jwt.verify(token,secretKey, (err, decoded) => {
+  jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
-      return res.status(401).send('Invalid or expired token');
+      return res.status(401).json({ message: 'Failed to authenticate token' });
     }
-    req.user = decoded;
+    req.userId = decoded.User_id;
     next();
   });
-};
+}
 
-app.post('/api/login', async (req, res) => {
-    try {
-
-      const {username, password} = req.body
+app.post("/api/login", async (req, res) => {
+  try {
+      const { username, password } = req.body;
       const user = await User.findOne({ username });
-      const id=user._id
       if (!user) {
-        return res.status(401).json({ message: 'Incorrect UserName or password'});
+          return res.status(401).json({ message: "User does not exist. Please register first." });
       }
-      // const passwordMatch = await bcrypt.compare(password, user.password);
-  
       if (user.password !== password) {
-        return res.status(401).json({ message: 'Incorrect UserName or password' });
+          return res.status(401).json({ message: "Incorrect username or password" });
       }
-      let token=jwt.sign({username,id},secretKey,{expiresIn:'1h'})
-      return res.status(200).json({ message: 'Authentication successful',token:token });
-    } catch (error) {
-      console.error('Error logging in:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+      const token = jwt.sign({ username, id: user._id }, secretKey, { expiresIn: "1h" });
+
+      return res.status(200).json({ message: "Authentication successful", token });
+  } catch (error) {
+      console.error("Login Error:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 
 
@@ -101,7 +99,7 @@ const upload = multer({ storage: ds });
 
 app.post("/api/donate",UserTokenVerify, upload.single('Image'), async (req, res) => {
   const token=req.headers
-  const { Name, Age, Gender, Dob, Phone, Email, BloodGroup, Address, MedicalHistory, LastBloodDonate } = req.body;
+  const { Name, Age, Phone, Email, BloodGroup, LastBloodDonate } = req.body;
   if (!req.file) {
     return res.status(400).send({ message: 'Image file is required' });
   }
@@ -110,7 +108,7 @@ app.post("/api/donate",UserTokenVerify, upload.single('Image'), async (req, res)
     const verify= jwt.verify(token.token,secretKey)
     const username=verify.username
     const User_id=verify.id
-    const user = await User.findOne({username });
+    const user = await User.findOne({username});
       if (!user) {
         return res.status(401).json({ message: 'Please Login'});
       }
@@ -118,13 +116,9 @@ app.post("/api/donate",UserTokenVerify, upload.single('Image'), async (req, res)
       Image: req.file.filename,  
       Name,
       Age,
-      Gender,
-      Dob,
       Phone,
       Email,
       BloodGroup,
-      Address,
-      MedicalHistory,
       LastBloodDonate,
       User_id,
       username
@@ -138,29 +132,34 @@ app.post("/api/donate",UserTokenVerify, upload.single('Image'), async (req, res)
   }
 });
 
-
-app.get('/api/submits',UserTokenVerify, async (req, res) => {
+app.delete('/api/submits/delete/:id',UserTokenVerify,async (req,res)=>{
+  try{
+    const id= req.params.id
+    const result= await Doner.deleteOne({_id:id})
+    return res.status(200).send({message:"successfully deleted",result:result})
+  } 
+  catch(err){
+    console.error("Error fetching submissions:", err);
+    return res.status(500).json({ message: 'Server error', error: err.message });
+  }
+})
+app.get('/api/submits', UserTokenVerify, async (req, res) => {
   try {
-    const token = req.headers.token;
-
-    if (!token) {
-      return res.status(401).send({ message: 'Invalid token' });
-    }
-    const verify = jwt.verify(token, secretKey); 
-    const User_id = verify.User_id; 
-
-    const data = await Doner.find({ User_id });
-
+    const token=req.headers.token
+    const verify= jwt.verify(token,secretKey)
+    const User_id=verify.id
+    const data = await Doner.find({ User_id: User_id });
     if (data.length === 0) {
-      return res.status(200).send({ message: 'No data found for this user' });
+      return res.status(200).json({ message: 'No data found for this user', data: [] });
     }
 
-    return res.status(200).send(data);
+    return res.status(200).json(data);
   } catch (err) {
-    console.log(err);
-    return res.status(500).send({ message: 'Server error', error: err.message });
+    console.error("Error fetching submissions:", err);
+    return res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
 
 
 app.get("/api/doners",UserTokenVerify,async (req,res)=>{
@@ -184,9 +183,8 @@ app.post('/api/contact',async(req,res)=>{
 
 /* Admin Auth*/
 const AdminTokenVerify = (req, res, next) => {
-  const token = req.headers['token'];
+  const token = req.headers.token
   // console.log(token)
-
   if (!token) {
     return res.status(403).send('Access denied. No token provided.');
   }

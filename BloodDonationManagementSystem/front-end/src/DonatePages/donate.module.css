@@ -1,161 +1,110 @@
 .Form{
-    display: flex;
-    width: 500px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-around;
+    align-items:center;
+    width:90%;
+    max-width:500px;
+    height:auto;
+    background-color: #f4f4f4;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin: 20px auto;
+    animation: fadeIn 0.8s ease-in-out;
+}
+.inputGroup{
+    width:100%;
+    margin-bottom: 15px;
+    display:flex;
     flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    height:750px;
-    background-color: red;
-    border-radius: 10px;
-    margin-top: 20px;
+}
+
+.inputGroup label{
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.inputGroup input,
+.inputGroup select{
+    width: 90%;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    padding: 10px;
+    transition: 0.3s ease-in-out;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 20px;
 }
-.label{
-    width: 200px;
+.inputGroup input:focus,
+.inputGroup select:focus {
+    border-color: #ff4d4d;
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
 }
-.name,.age,.LastBloodDonate,.address,.bloodGroup,.dob,.email,.gender,.MedicalHistory,.phone,.image{
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    animation: shake 0.3s ease-in-out;
+}
+.Pop{
+    width:500px;
+    height:50px;
+    border-radius: 10px;
+    margin-top: 20px;
+    position: fixed;
+    top:10px;
+    z-index: 2;
+}
+.button {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    width:80%;
-    align-items: center;
-}
-.name label{
-    font-size: large;
-}
-.age label{
-    font-size: large;
-}
-.LastBloodDonate label{
-    font-size: large;
-}
-.address label{
-    font-size: large;
-}
-.bloodGroup label{
-    font-size: large;
-}
-.dob label{
-    font-size: large;
-}
-.email label{
-    font-size: large;
-}
-.gender label{
-    font-size: large;
-}
-.MedicalHistory label{
-    font-size: large;
-}
-.phone label{
-    font-size: large;
-}
-.image input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-.name input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-.age input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
+    justify-content: center;
 }
 
-.gender select{
-    width:300px;
-    height: 33px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.dob input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-.phone input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.email input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.bloodGroup select{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.address input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.MedicalHistory input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-}
-
-.LastBloodDonate input{
-    width:300px;
-    height: 30px;
-    border-radius: 10px;
-    border:none;
-    outline: none;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-.button{
-    width: 80%;
-    height: 40px;
+.button button {
+    width: 100%;
+    height: 45px;
+    background: linear-gradient(135deg, #ff4d4d, #ff0000);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    transition: 0.3s;
 }
-.button button{
-    width:100%;
-    height:100%;
-    cursor: pointer;
+
+.button button:hover {
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    transform: scale(1.05);
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake{
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+}
+
+@media (max-width: 600px) {
+    .Form {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .button button {
+        font-size: 14px;
+    }
 }

@@ -47,6 +47,7 @@ tr td.buttons{
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
+    border-radius: 10px;
 }
 .buttons button:nth-child(1){
     background-color: rgb(69, 69, 223);
@@ -130,12 +131,6 @@ tr td.buttons{
     float: right;
     margin-top: 10px;
     margin-right: 15px;
-    /* padding: 15px; */
-    /* width:50px;
-    height:50px;
-    border-radius: 50%;
-    box-shadow: 1px 1px 10px black;
-    text-align: center; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -167,7 +162,6 @@ tr td.buttons{
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: space-around; */
 }
 .create .content{
     display: flex;
@@ -240,20 +234,12 @@ tr td.buttons{
     font-size: 15px;
     cursor: pointer;
 }
-
-
-
-
-/* Skeleton table */
 .tableSkeleton {
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
     border-collapse: collapse;
 }
-
-
-/* Skeleton Heading */
 .headingSkeleton {
     background-color: #e0e0e0;
     text-align: center;
@@ -267,8 +253,6 @@ tr td.buttons{
     border-radius: 4px;
     margin: 0 auto;
 }
-
-/* Skeleton Content Rows */
 .skeletonRow {
     text-align: center;
     height: 40px;
@@ -280,16 +264,12 @@ tr td.buttons{
     margin: 5px;
     border-radius: 4px;
 }
-
-/* Skeleton Buttons */
 .skeletonButton {
     width: 80px;
     height: 30px;
     background-color: #e0e0e0;
     border-radius: 5px;
 }
-
-/* Shimmer Effect */
 @keyframes shimmer {
     0% {
         background-position: -100%;

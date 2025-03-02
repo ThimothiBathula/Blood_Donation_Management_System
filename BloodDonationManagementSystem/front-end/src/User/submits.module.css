@@ -1,0 +1,64 @@
+.submitsContainer {
+  padding: 20px;
+}
+.loading {
+  color: blue;
+}
+.error {
+  color: red;
+}
+.noData {
+  color: gray;
+}
+.cardList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.card {
+  background-color: #f9f9f9e0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 300px;
+  transition: transform 0.3s ease-in-out, max-height 0.3s ease-in-out;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.card.expanded {
+  transform: scale(1.05);
+  max-height: 400px;
+}
+
+.cardContent h3 {
+  margin: 0 0 10px;
+}
+
+.cardDetails {
+  margin-top: 10px;
+}
+
+.cardActions {
+  margin-top: 15px;
+}
+
+.cardActions button {
+  margin-right: 10px;
+  width:100px;
+  background-color: transparent;
+  height:30px;
+  border-radius: 10px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+button:hover{
+  background-color: red;
+}
+p span{
+  color:black;
+  text-decoration: none;
+  letter-spacing: normal;
+}

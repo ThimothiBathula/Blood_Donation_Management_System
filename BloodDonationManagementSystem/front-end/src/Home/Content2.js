@@ -5,7 +5,7 @@ const Content2=()=>{
         <>
         <div className={styles.container}>
             <div className={styles.left}>
-                <img src='content.jpg'/>
+                <img src='content.jpg' alt='contentimage'/>
             </div>
             <div className={styles.right}>
                 <h1>A SAFER,MORE PLENTIFUL 

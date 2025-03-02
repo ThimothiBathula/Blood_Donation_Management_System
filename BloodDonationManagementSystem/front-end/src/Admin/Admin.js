@@ -2,6 +2,7 @@ import styles from "./admin.module.css"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const SkeletonTable = () => {
   const a=[1,2,3,4]
@@ -49,23 +50,6 @@ const Admin=()=>{
     const [CrPop,SetCrPop]=useState(false)
     const [temp,Settemp]=useState(null)
     const [UpdateUser,setUpdateUser]=useState()
-    
-    const checkSessionExpiration = () => {
-        const loginTime = localStorage.getItem("AdminloginTime");
-    
-        if (loginTime) {
-            const currentTime = Date.now();
-            const oneHour = 60 * 60 * 1000;
-    
-            if (currentTime - loginTime > oneHour) {
-                localStorage.removeItem("Admin");
-                localStorage.removeItem("loginTime");
-                navigate("/", { state: { message: "Your session has expired. Please login again." } });
-                return true;
-            }
-        }
-        return false;
-    };
 
     let changeFormData = (event) => {
         const { name, value } = event.target;
@@ -73,15 +57,13 @@ const Admin=()=>{
     }
 
     const updateDetails=async(data)=>{
-                if (checkSessionExpiration()) return;
             try{
                 let d = {
                     username: data.username,
                     email: data.email,
                     password: data.password
                 }
-                const Admin =JSON.parse(localStorage.getItem('Admin'))
-                const token=Admin.token
+                const token = Cookies.get("Admin")
                 let response= await axios.put('http://localhost:4000/api/update/'+data.id,d,{
                     headers: {
                         'token': token
@@ -95,28 +77,38 @@ const Admin=()=>{
                 Setmsg(response.data.message)
                 Getusers()
             }catch(err){
-                console.log(err)
+                if (err.response) {
+                    const statusCode = err.response.status;
+                    if(statusCode===401){
+                        Cookies.remove('Admin')
+                        navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                        navigate(0);
+                        return null;
+        
+                    }
+                }
+        
+
             }
     }
     
-   const Submit=async()=>{
-            if (checkSessionExpiration()) return;
+   const Submit=async(e)=>{
          try{
-            const Admin =JSON.parse(localStorage.getItem('Admin'))
-            const token=Admin.token
+    
+            const token=Cookies.get("Admin")
             const response=await axios.post("http://localhost:4000/api/register",{
                 username,
                 email,
                 password,
+            },
+            {
                 headers: {
                     'token': token
                   }
-            },
+            }
         )
-            console.log(response)
-            console.log(username,email,password)
-            Getusers()
-            SetCrPop(false)
+            Getusers();
+            SetCrPop(false);
 
 
          }
@@ -124,8 +116,9 @@ const Admin=()=>{
             if (err.response) {
                 const statusCode = err.response.status;
                 if(statusCode===401){
-                    localStorage.removeItem('Admin')
+                    Cookies.remove('Admin');
                     navigate("/", { state: { message: "Your login is expired. Please login again." } });
+                    navigate(0);
                     return null;
     
                 }
@@ -137,22 +130,20 @@ const Admin=()=>{
 
 
     const Getusers=async()=>{
-        if (checkSessionExpiration()) return;
         try{
-        const token=JSON.parse(localStorage.getItem('Admin'))
-        const Admin=token.token
+        const Admin=Cookies.get("Admin")
         let res=await axios.get('http://localhost:4000/api/users',{
         headers: {
             'token':Admin
           }
-        })
-    Setusers(res.data)
+        });
+    Setusers(res.data);
     }
     catch(err){
         if (err.response) {
             const statusCode = err.response.status;
             if(statusCode===401){
-                localStorage.removeItem('Admin')
+                Cookies.remove('Admin');
                 navigate("/", { state: { message: "Your login is expired. Please login again." } });
                 navigate(0);
                 return null;
@@ -163,34 +154,33 @@ const Admin=()=>{
    }
    useEffect(()=>{
     setTimeout(()=>{
-        Getusers()
+        Getusers();
     },3000)
-   },[])
+   },[]);
 
 
 const DeleteUser=async(id)=>{
-    if (checkSessionExpiration()) return;
     try{
-        const Admin =JSON.parse(localStorage.getItem('Admin'))
-        const token=Admin.token
+        const token=Cookies.get("Admin")
     let res=await axios.delete('http://localhost:4000/api/delete/'+id,{
         headers: {
             'token': token
           }
     })
     setTimeout(()=>{
-        Setmsg("")
+        Setmsg("");
     },5000)
-    Setmsg(res.data.message)
-    Getusers()
-    SetPop(false)
+    Setmsg(res.data.message);
+    Getusers();
+    SetPop(false);
 }
 catch(err){
     if (err.response) {
         const statusCode = err.response.status;
         if(statusCode===401){
-            localStorage.removeItem('Admin')
+            Cookies.remove('Admin');
             navigate("/", { state: { message: "Your login is expired. Please login again." } });
+            navigate(0);
             return null;
         }
     }
@@ -199,16 +189,16 @@ catch(err){
 }
 
 const update=(e)=>{
-    setUpdate(true)
-    setUpdateUser({id:e._id,username:e.username,email:e.email,password:e.password})
+    setUpdate(true);
+    setUpdateUser({id:e._id,username:e.username,email:e.email,password:e.password});
 }
 const open=(e)=>{
-    SetPop(true)
-    Settemp(e)
+    SetPop(true);
+    Settemp(e);
 }
 
 const OpenCreate=()=>{
-    SetCrPop(true)
+    SetCrPop(true);
 }
     return(
         <>

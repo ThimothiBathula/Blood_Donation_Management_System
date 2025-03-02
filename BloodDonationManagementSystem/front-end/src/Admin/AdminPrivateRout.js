@@ -1,22 +1,20 @@
 import { useState, useEffect } from "react";
-import { Navigate, Outlet} from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
 
-const UserAuthenticate = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); 
-  const validate = async () => {
-    const userToken = localStorage.getItem("Admin");
-    if (userToken) {
-      setIsAuthenticated(true); 
-    }
-    else{
-      setIsAuthenticated(false); 
-    }
-  };
+const AdminPrivateRoute = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    validate(); 
-  }, []); 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/adminLog" />;
+    const adminToken = Cookies.get("Admin");
+    setIsAuthenticated(!!adminToken); 
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>; 
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/adminLog"/>;
 };
 
-export default UserAuthenticate;
+export default AdminPrivateRoute;

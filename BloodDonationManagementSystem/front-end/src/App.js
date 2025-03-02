@@ -6,7 +6,7 @@ import Register from './User-Register/Register';
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import Home from './Home/Home';
 import Doners from './DonatePages/Doners';
-import DonerPage from './DonatePages/DonerPage';
+// import DonerPage from './DonatePages/DonerPage';
 import Admin from './Admin/Admin';
 import Donate from './DonatePages/Donate';
 import Contact from './Contact/Contact';
@@ -19,6 +19,7 @@ import AdminPrivateRout from './Admin/AdminPrivateRout';
 import UserAuthenticate from './User/UserAuthenticate';
 import Contacts from './Admin/Contacts';
 // import Users from './Admin/Users';
+import Submits from './User/Submits'
 function App() {
   return (
    <React.Fragment>
@@ -28,25 +29,26 @@ function App() {
     <Route path='' element={<Home/>}/>
       <Route path='/login' element={<Login/>}/>
       <Route path='/reg' element={<Register/>}/>
-      <Route path='/doners' element={<Doners/>}/>
       
-      <Route path='/doner' element={<DonerPage/>}/>
+      
+      {/* <Route path='/doner' element={<DonerPage/>}/> */}
       <Route path='/contact' element={<Contact/>}/>
       <Route path='/about' element={<About/>}/>
       <Route element={<UserAuthenticate/>}>
            <Route path='/donate' element={<Donate/>}/>
-           <Route path='/submits' element={<User/>}/>
+           <Route path='/submits' element={<Submits/>}/>
+           <Route path='/doners' element={<Doners/>}/>
       </Route>
       {/* <Route path='/user' element={<Users/>}/> */}
       <Route path='/adminLog' element={<AdminLog/>}/>
     
-      {/* <Route element={<AdminPrivateRout />}> */}
+      <Route element={<AdminPrivateRout />}>
           <Route path="/users" element={<Admin />} />
           <Route path="/admins" element={<AdminData />} />
           <Route path="/donersList" element={<DonersData />} />
           <Route path="/contacts" element={<Contacts/>} />
           
-      {/* </Route> */}
+      </Route>
 
 
     </Routes>

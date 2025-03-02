@@ -253,10 +253,6 @@ tr td.buttons{
     font-size: 15px;
     cursor: pointer;
 }
-
-
-
-
 /* Skeleton table */
 .tableSkeleton {
     margin-left: auto;
@@ -264,8 +260,6 @@ tr td.buttons{
     margin-top: 20px;
     border-collapse: collapse;
 }
-
-
 /* Skeleton Heading */
 .headingSkeleton {
     background-color: #e0e0e0;
@@ -301,8 +295,6 @@ tr td.buttons{
     background-color: #e0e0e0;
     border-radius: 5px;
 }
-
-/* Shimmer Effect */
 @keyframes shimmer {
     0% {
         background-position: -100%;
@@ -334,19 +326,47 @@ tr td.buttons{
     background-color: white;
     border-radius: 10px;
 }
+.pop div{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+}
 .close{
     float: right;
     margin: 10px;
 }
-.confirmbutton{
-    width:400px;
-}
+
 .pop .confirmBtn{
-    width:150px;
-    height:30px;
-    border-radius: 10px;
-    border: 1px solid black;
+    width: 180px;
+    height: 40px;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    margin-left: auto;
-    margin-right: auto;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 2px solid black;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    color: black;
+    z-index: 1;
+}
+.confirmBtn::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: red;
+    top: 0;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+.confirmBtn:hover::before {
+    transform: scaleX(1);
+    z-index: -1;
 }
