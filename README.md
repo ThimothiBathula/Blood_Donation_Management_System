@@ -1,5 +1,3 @@
-Thanks! You're right — I focused only on the backend. Let's now adjust the `README.md` to include **both the frontend and backend** details of your Blood Donation Platform.
-
 ---
 
 # 🩸 Blood Donation Platform (Full Stack)
@@ -12,7 +10,7 @@ A web application to simplify and manage blood donations, user registrations, do
 
 | Layer       | Tech Used                     |
 | ----------- | ----------------------------- |
-| Frontend    | React.js, Axios, Tailwind CSS |
+| Frontend    | React.js, Axios, CSS          |
 | Backend     | Node.js, Express.js           |
 | Database    | MongoDB (via Mongoose)        |
 | Auth        | JWT (for Users & Admins)      |
@@ -23,9 +21,9 @@ A web application to simplify and manage blood donations, user registrations, do
 ## 🗂️ Project Structure
 
 ```
-blood-donation-platform/
-├── backend/         # Node.js + Express + MongoDB
-├── frontend/        # React + Tailwind CSS
+BloodDonationManagementSystem/
+├── Back-end/         # Node.js + Express + MongoDB
+├── front-end/        # React
 └── README.md
 ```
 
@@ -126,6 +124,24 @@ Developed by: **\THIMOTHI**
 Email: \[[btt6303273@gmail.com](mailto:your.email@example.com)]
 
 ---
+## 🖼️ Screenshots
 
-### 👤 Home Page
-(../BloodDonationManagementSystem/Home.png)
+###  Home Page
+![Home Page](./BloodDonationManagementSystem/Home.png)
+###  Contact Page
+![Contact Page](./BloodDonationManagementSystem/Contact.png)
+###  About Page
+![About Page](./BloodDonationManagementSystem/About.png)
+###  User Login Page
+![User Login Page](./BloodDonationManagementSystem/Screenshot%202025-03-02%20095940.png)
+###  User Register Page
+![User Register Page](./BloodDonationManagementSystem/Screenshot%202025-03-02%20100001.png))
+###  Admin Login Page
+![Admin Login Page](./BloodDonationManagementSystem/Screenshot%202025-03-02%20100050.png)
+###  Admin Data Page
+![Admin Data Page](./BloodDonationManagementSystem/AdminData.png)
+
+
+
+
+
